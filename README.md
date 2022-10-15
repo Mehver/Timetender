@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./%23README/icon/256.png" width="20%"/>
+    <img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/icon/256.png" width="20%"/>
     <h1>Time Tender <code>v0.1.0</code></h1>
 </div>
 
@@ -17,46 +17,52 @@ And with classifying by color and tags, it can be more powerful.
 
 ### 1.1 (eliminated) Excel Concept
 
-<img src="./%23README/0.png" width="50%">
+<img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/0.png" width="50%">
 
 ### 1.2 Now Project
 
 <table>
     <tr>
-        <td><img src="./%23README/A.png"/></td>
-        <td><img src="./%23README/B.png"/></td>
+        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/A.png"/></td>
+        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/B.png"/></td>
     </tr>
 <tr>
-        <td><img src="./%23README/C.png"/></td>
-        <td><img src="./%23README/D.png"/></td>
+        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/C.png"/></td>
+        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/D.png"/></td>
     </tr>
 </table>
 
 ## 2 Usage & Development
 
-### 2.1 Requirements
+### 2.1 Docker
+
+https://hub.docker.com/r/titanrgb/timetender
+
+### 2.2 Node.js
+
+#### 2.2.1 Requirements
 
 [Node.js](https://nodejs.org/en/) v16.16.0
 
-### 2.2 Installation
+#### 2.2.2 Installation
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-### 2.3 Start Server
+#### 2.2.3 Start Server
 
 ```bash
 npm start
 ```
 
-### 2.4 Frontend Development
+#### 2.2.4 Frontend Development
 
 ```bash
 npm run react
 ```
 
-### 2.5 Frontend Compile
+#### 2.2.5 Frontend Compile
 
 ```bash
 npm run build
@@ -90,4 +96,3 @@ npm run build
 MPL 2.0
 
 Copyright © 2022-PRESENT GitHub@TitanRGB/Timetender , All Rights Reserved.
-
