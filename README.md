@@ -1,8 +1,8 @@
 <div align="center">
     <img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/icon/256.png" width="20%"/>
     <h1>Time Tender <code>v0.1.0</code></h1>
-	<a href='https://github.com/TitanRGB/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"/>
-	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"/>
+	<a href='https://github.com/TitanRGB/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
+	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"></a>
     </tr>
 </div>
 
