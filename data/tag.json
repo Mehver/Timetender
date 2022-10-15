@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "color": "#00ffff",
+    "type": "test",
+    "tag": "test tag 1"
+  },
+  {
+    "id": 2,
+    "color": "#ffff00",
+    "type": "test",
+    "tag": "test tag 2"
+  },
+  {
+    "id": 3,
+    "color": "#321234",
+    "type": "test",
+    "tag": "test tag 3"
+  },
+  {
+    "id": 4,
+    "color": "#00ff00",
+    "type": "test",
+    "tag": "test tag 4"
+  }
+]
