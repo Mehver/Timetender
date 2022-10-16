@@ -39,7 +39,9 @@ And with classifying by color and tags, it can be more powerful.
 
 ### 2.1 Docker
 
-https://hub.docker.com/r/titanrgb/timetender
+```bash
+docker run -d -p 8080:8080 titanrgb/timetender
+```
 
 ### 2.2 Node.js
 
