@@ -40,7 +40,13 @@ And with classifying by color and tags, it can be more powerful.
 ### 2.1 Docker
 
 ```bash
-docker run -d -p 8080:8080 titanrgb/timetender:v0.1.0
+docker pull titanrgb/timetender:latest
+```
+
+or
+
+```shell
+docker pull ghcr.io/titanrgb/timetender:latest
 ```
 
 ### 2.2 Node.js
