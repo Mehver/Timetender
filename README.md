@@ -39,15 +39,20 @@ And with classifying by color and tags, it can be more powerful.
 
 ### 2.1 Docker
 
-```bash
-docker pull titanrgb/timetender:latest
-```
-
-or
-
 ```shell
+# DockerHub
+docker pull titanrgb/timetender:latest
+# GitHub
 docker pull ghcr.io/titanrgb/timetender:latest
 ```
+
+#### Variables
+
+| Parameter               | Contrast Example        | Function                                                     |
+| ----------------------- | ----------------------- | ------------------------------------------------------------ |
+| -p 8080:8080            | -p 18080:8080           | Http webUI.                                                  |
+| -e TZ=Asia/Shanghai     | -e TZ=Europe/London     | Specify a timezone to use (e.g. Europe/London).              |
+| -v /path/for/data:/data | -v /path_for_data:/data | Timetender's data storage. File form in json, might modify to file input/output cache after using database in the future. |
 
 ### 2.2 Node.js
 
