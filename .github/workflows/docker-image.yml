@@ -46,4 +46,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest            
+            ${{ env.REGISTRY }}/titanrgb/${{ env.IMAGE_NAME }}:latest            
