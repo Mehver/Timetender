@@ -61,36 +61,32 @@ docker pull ghcr.io/titanrgb/timetender:latest
 
 **Installation**
 
-```bash
+```shell
 npm install --legacy-peer-deps
 npm run build
 ```
 
 **Frontend Development**
 
-```bash
+```shell
 npm run react
 ```
 
 **Frontend Compile**
 
-```bash
+```shell
 npm run build
 ```
 
 **Backend Server**
 
-```bash
+```shell
 npm start
 ```
 
 **Build Docker Image**
 
-```powershell
-(Get-Content './init/init.sh' -Raw).Replace("`r`n", "`n") | Set-Content './init/init.sh' -Force
-```
-
-```bash
+```shell
 npm install --legacy-peer-deps
 npm run build
 docker build -t titanrgb/timetender:<tag> .
