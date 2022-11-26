@@ -113,6 +113,7 @@ docker build -t titanrgb/timetender:<tag> .
   - Express.js
 - Docker
   - Node.js v16 Image (https://hub.docker.com/_/node) 
+    - `node:16-alpine3.16`
 
 ## 5 Reference
 
