@@ -44,13 +44,22 @@ docker pull titanrgb/timetender:latest
 docker pull ghcr.io/titanrgb/timetender:latest
 ```
 
-#### Variables
+```shell
+docker run -d \
+  --name=timetender \
+  -e TZ=Asia/Shanghai \
+  -p 127.0.0.1:80:8080/tcp \
+  -v /path/to/config:/usr/lib/timetender/config \
+  -v /path/for/data:/usr/lib/timetender/data \
+  titanrgb/timetender:latest
+```
 
-| Parameter               | Contrast Example        | Function                                                     |
-| ----------------------- | ----------------------- | ------------------------------------------------------------ |
-| -p 8080:8080            | -p 18080:8080           | Http webUI.                                                  |
-| -e TZ=Asia/Shanghai     | -e TZ=Europe/London     | Specify a timezone to use (e.g. Europe/London).              |
-| -v /path/for/data:/data | -v /path_for_data:/data | Timetender's data storage. File form in json, might modify to file input/output cache after using database in the future. |
+| Parameter                                       | Function                                                     |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| `-p 127.0.0.1:80:8080/tcp`                      | Http webUI                                                   |
+| `-e TZ=Asia/Shanghai`                           | Specify a timezone to use (e.g. Asia/Shanghai, Europe/London) |
+| `-v /path/to/config:/usr/lib/timetender/config` | Timetender's configuration file                              |
+| `-v /path/for/data:/usr/lib/timetender/data`    | Timetender's data storage                                    |
 
 ## 3 Development
 
@@ -59,7 +68,7 @@ docker pull ghcr.io/titanrgb/timetender:latest
 - [Node.js](https://nodejs.org/en/) v16.16.0
 - [Docker](https://www.docker.com/) v20.10.17
 
-**Installation**
+**Install Dependency**
 
 ```shell
 npm install --legacy-peer-deps
