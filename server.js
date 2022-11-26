@@ -16,7 +16,6 @@ app.all("/load/:json_file", (req, res) => {
     );
     res.send(data);
 });
-
 // save data to data.json
 app.post("/save/:json_file", (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

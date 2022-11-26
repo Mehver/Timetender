@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/icon/256.png" width="20%"/>
-    <h1>Timetender <code>v0.1.0</code></h1>
+    <h1>Timetender <code>v0.1.1</code></h1>
 	<a href='https://github.com/TitanRGB/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
 	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"></a>
     </tr>
@@ -35,9 +35,7 @@ And with classifying by color and tags, it can be more powerful.
     </tr>
 </table>
 
-## 2 Usage & Development
-
-### 2.1 Docker
+## 2 Usage
 
 ```shell
 # DockerHub
@@ -54,60 +52,77 @@ docker pull ghcr.io/titanrgb/timetender:latest
 | -e TZ=Asia/Shanghai     | -e TZ=Europe/London     | Specify a timezone to use (e.g. Europe/London).              |
 | -v /path/for/data:/data | -v /path_for_data:/data | Timetender's data storage. File form in json, might modify to file input/output cache after using database in the future. |
 
-### 2.2 Node.js
+## 3 Development
 
-#### 2.2.1 Requirements
+**Requirements**
 
-[Node.js](https://nodejs.org/en/) v16.16.0
+- [Node.js](https://nodejs.org/en/) v16.16.0
+- [Docker](https://www.docker.com/) v20.10.17
 
-#### 2.2.2 Installation
+**Installation**
 
 ```bash
 npm install --legacy-peer-deps
+npm run build
 ```
 
-#### 2.2.3 Start Server
-
-```bash
-npm start
-```
-
-#### 2.2.4 Frontend Development
+**Frontend Development**
 
 ```bash
 npm run react
 ```
 
-#### 2.2.5 Frontend Compile
+**Frontend Compile**
 
 ```bash
 npm run build
 ```
 
-## 3 Built With
+**Backend Server**
+
+```bash
+npm start
+```
+
+**Build Docker Image**
+
+```powershell
+(Get-Content './init/init.sh' -Raw).Replace("`r`n", "`n") | Set-Content './init/init.sh' -Force
+```
+
+```bash
+npm install --legacy-peer-deps
+npm run build
+docker build -t titanrgb/timetender:<tag> .
+```
+
+
+## 4 Built With
 
 - Node.js
-    - React.js
-        - Luckysheet (https://github.com/mengshukeji/Luckysheet)
-        - Material UI (https://github.com/mui/material-ui)
-        - Ant Design (https://github.com/ant-design/ant-design)
-        - Json Editor (https://github.com/josdejong/jsoneditor)
-    - Express.js
+  - React.js
+    - Luckysheet (https://github.com/mengshukeji/Luckysheet)
+    - Material UI (https://github.com/mui/material-ui)
+    - Ant Design (https://github.com/ant-design/ant-design)
+    - Json Editor (https://github.com/josdejong/jsoneditor)
+  - Express.js
+- Docker
+  - Node.js v16 Image (https://hub.docker.com/_/node) 
 
-## 4 Reference
+## 5 Reference
 
 - [GitHub@mengshukeji/Luckysheet](https://github.com/mengshukeji/Luckysheet)
-    - https://dream-num.github.io/LuckysheetDocs/zh/guide/config.html
-    - https://dream-num.github.io/LuckysheetDocs/zh/guide/api.html
+  - https://dream-num.github.io/LuckysheetDocs/zh/guide/config.html
+  - https://dream-num.github.io/LuckysheetDocs/zh/guide/api.html
 - [GitHub@mengshukeji/luckysheet-react](https://github.com/mengshukeji/luckysheet-react)
 - [GitHub@mui/material-ui](https://github.com/mui/material-ui)
-    - https://mui.com/zh/material-ui/react-table/
+  - https://mui.com/zh/material-ui/react-table/
 - [GitHub@ant-design/ant-design](https://github.com/ant-design/ant-design)
-    - https://ant.design/components/icon/
+  - https://ant.design/components/icon/
 - [GitHub@josdejong/jsoneditor](https://github.com/josdejong/jsoneditor)
-    - https://github.com/josdejong/jsoneditor/tree/master/examples/react_demo
+  - https://github.com/josdejong/jsoneditor/tree/master/examples/react_demo
 
-## 5 License
+## 6 License
 
 MPL 2.0
 

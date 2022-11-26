@@ -24,7 +24,7 @@ class TopBar extends React.Component {
         return (
             <>
                 <div id="topBar" style={topBarCss}>
-                    <p style={titleCss}>Timetender&nbsp;v0.1.0</p>
+                    <p style={titleCss}>Timetender&nbsp;v0.1.1</p>
                 </div>
             </>
         )

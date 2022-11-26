@@ -81,9 +81,9 @@ class LuckysheetRenderData extends React.Component {
 
                 let rowDaysL;
                 let rowDays;
-                let tagsCell_sameDayEndCounter;
-                let tagsCell_rowDaysL;
-                let tagsCell_rowDays;
+                // let tagsCell_sameDayEndCounter;
+                // let tagsCell_rowDaysL;
+                // let tagsCell_rowDays;
 
                 let textColor = function (color) {
                     let redValue;

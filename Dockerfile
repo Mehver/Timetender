@@ -1,7 +1,8 @@
-FROM node:16
-WORKDIR /usr/timetender
+FROM node:16-alpine3.16
+WORKDIR /usr/lib/timetender
 COPY . .
-RUN [ "npm", "install", "--legacy-peer-deps" ]
-RUN [ "npm", "run", "build" ]
+RUN npm install --omit=dev --legacy-peer-deps \
+    && npm install dos2unix -g \
+    && dos2unix /usr/lib/timetender/init/init.sh
 EXPOSE 8080
-CMD [ "node", "server.js" ]
+CMD [ "sh", "/usr/lib/timetender/init/init.sh" ]
