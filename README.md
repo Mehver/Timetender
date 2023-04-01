@@ -3,6 +3,7 @@
     <h1>Timetender <code>v0.1.1</code></h1>
 	<a href='https://github.com/TitanRGB/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
 	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"></a>
+	<a href='https://quay.io/repository/titanrgb/timetender'><img src="https://img.shields.io/badge/-Quay.io-ee0000?style=flat&amp;logo=RedHat&amp;logoColor=white" referrerpolicy="no-referrer" alt="Quay.io"></a>
     </tr>
 </div>
 
@@ -42,6 +43,8 @@ And with classifying by color and tags, it can be more powerful.
 docker pull titanrgb/timetender:latest
 # GitHub
 docker pull ghcr.io/titanrgb/timetender:latest
+# Quay.io
+docker pull quay.io/titanrgb/timetender:latest
 ```
 
 ```shell
