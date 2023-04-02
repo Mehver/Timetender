@@ -28,7 +28,7 @@ export default class Setting extends React.Component {
                             backgroundColor: '#fff',
                         }}
                     />
-                    <p style={{fontSize: 25}}>Timetender v0.1.1</p>
+                    <p style={{fontSize: 25}}>Timetender v0.1.2</p>
                     <p style={{fontSize: 20}}>GitHub@TitanRGB</p>
                     <p style={{fontSize: 10}}>https://github.com/TitanRGB/Timetender</p>
                     <p style={{fontSize: 15}}>Copyright © 2022-present Timetender</p>
