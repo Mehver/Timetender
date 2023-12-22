@@ -6,6 +6,6 @@ RUN npm install --legacy-peer-deps \
     && rm -rf node_modules
 RUN npm install --omit=dev --legacy-peer-deps \
     && npm install dos2unix -g \
-    && dos2unix /usr/lib/timetender/bin/init.sh
+    && dos2unix /usr/lib/timetender/src/init.sh
 EXPOSE 8080
-ENTRYPOINT [ "sh", "/usr/lib/timetender/bin/init.sh" ]
+ENTRYPOINT [ "sh", "/usr/lib/timetender/src/init.sh" ]
