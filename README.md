@@ -21,18 +21,18 @@ And with classifying by color and tags, it can be more powerful.
 
 ### 1.1 (eliminated) Excel Concept
 
-<img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/0.png" width="50%">
+<img src="https://github.com/Mehver/Timetender/raw/main/%23README/0.png" width="50%">
 
 ### 1.2 Now Project
 
 <table>
     <tr>
-        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/A.png"/></td>
-        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/B.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/A.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/B.png"/></td>
     </tr>
 <tr>
-        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/C.png"/></td>
-        <td><img src="https://github.com/TitanRGB/Timetender/raw/main/%23README/D.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/C.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/D.png"/></td>
     </tr>
 </table>
 
@@ -42,7 +42,7 @@ And with classifying by color and tags, it can be more powerful.
 # DockerHub
 docker pull titanrgb/timetender:latest
 # GitHub
-docker pull ghcr.io/titanrgb/timetender:latest
+docker pull ghcr.io/mehver/timetender:latest
 # Quay.io
 docker pull quay.io/titanrgb/timetender:latest
 ```
@@ -101,7 +101,7 @@ npm start
 ```shell
 npm install --legacy-peer-deps
 npm run build
-docker build -t titanrgb/timetender:<tag> .
+docker build -t <YourID>/timetender:<tag> .
 ```
 
 
