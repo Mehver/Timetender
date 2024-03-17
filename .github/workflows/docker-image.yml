@@ -13,14 +13,16 @@ jobs:
     env:
       TZ: Asia/Shanghai
     outputs:
-      tags: ${{ steps.set-output-id.outputs.tags }}
+      version-tag: ${{ steps.set-output-id.outputs.version-tag }}
+      latest-tag: latest
     steps:
       - uses: actions/checkout@v2
-      - name: set-output
+      - name: Get Tags
         id: set-output-id
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=tags::${VERSION}
+          echo ::set-output name=version-tag::${VERSION}
+
   push-ghcr:
     needs: get-tags
     runs-on: ubuntu-20.04
@@ -29,30 +31,45 @@ jobs:
       REGISTRY: ghcr.io
     steps:
       - uses: actions/checkout@v2
-      - name: Login
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PACKAGES_TOKEN }}
-      - name: Build && Push
+      - name: Build and Push to GHCR
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/mehver/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
-      - name: Login DockerHub to Sync
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/mehver/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.version-tag }}
+            ${{ env.REGISTRY }}/mehver/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.latest-tag }}
+
+  push-dockerhub:
+    needs: get-tags
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Push to DockerHub
+      - name: Build and Push to DockerHub
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: docker.io/titanrgb/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
-
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            docker.io/titanrgb/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.version-tag }}
+            docker.io/titanrgb/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.latest-tag }}
