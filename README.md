@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://github.com/Mehver/Timetender/raw/main/%23README/icon/256.png" width="20%"/>
-    <h1>Timetender <code>v0.1.3</code></h1>
+    <h1>Timetender <code>v0.1.4</code></h1>
 	<a href='https://github.com/Mehver/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
 	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"></a>
 	<a href='https://quay.io/repository/titanrgb/timetender'><img src="https://img.shields.io/badge/-Quay.io-ee0000?style=flat&amp;logo=RedHat&amp;logoColor=white" referrerpolicy="no-referrer" alt="Quay.io"></a>
