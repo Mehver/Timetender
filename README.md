@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://github.com/Mehver/Timetender/raw/main/%23README/icon/256.png" width="20%"/>
+    <img src="https://github.com/Mehver/Timetender/raw/main/docs/icon/256.png" width="20%"/>
     <h1>Timetender <code>v0.1.4</code></h1>
 	<a href='https://github.com/Mehver/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
 	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" referrerpolicy="no-referrer" alt="DockerHub"></a>
@@ -21,18 +21,18 @@ And with classifying by color and tags, it can be more powerful.
 
 ### 1.1 (eliminated) Excel Concept
 
-<img src="https://github.com/Mehver/Timetender/raw/main/%23README/0.png" width="50%">
+<img src="https://github.com/Mehver/Timetender/raw/main/docs/0.png" width="50%">
 
 ### 1.2 Now Project
 
 <table>
     <tr>
-        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/A.png"/></td>
-        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/B.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/docs/A.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/docs/B.png"/></td>
     </tr>
 <tr>
-        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/C.png"/></td>
-        <td><img src="https://github.com/Mehver/Timetender/raw/main/%23README/D.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/docs/C.png"/></td>
+        <td><img src="https://github.com/Mehver/Timetender/raw/main/docs/D.png"/></td>
     </tr>
 </table>
 
