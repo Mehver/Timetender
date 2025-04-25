@@ -104,8 +104,9 @@ npm run build
 docker build -t <YourID>/timetender:<tag> .
 ```
 
-
 ## 4 Built With
+
+> All dependencies are open-source and licensed under permissive licenses. No copyleft (e.g., GPL, AGPL) components are included.
 
 - Node.js
   - React.js
@@ -113,7 +114,7 @@ docker build -t <YourID>/timetender:<tag> .
     - Material UI (https://github.com/mui/material-ui)
     - Ant Design (https://github.com/ant-design/ant-design)
     - Json Editor (https://github.com/josdejong/jsoneditor)
-  - Express.js
+  - Express.js (https://github.com/expressjs/express)
 - Docker
   - Node.js v16 Image (https://hub.docker.com/_/node) 
     - `node:16-alpine3.16`
@@ -133,6 +134,8 @@ docker build -t <YourID>/timetender:<tag> .
 
 ## 6 License
 
-MPL 2.0
+This project is released under the BSD 3-Clause License. Code may be reused with proper attribution.
 
-Copyright © 2022-PRESENT GitHub@Mehver/Timetender , All Rights Reserved.
+Copyright (c) 2022-Present, Mehver (https://github.com/Mehver). All rights reserved.
+
+All dependencies are open-source and licensed under permissive licenses. No copyleft (e.g., GPL, AGPL) components are included.
