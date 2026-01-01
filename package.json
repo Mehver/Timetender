@@ -8,10 +8,10 @@
     "build": "react-scripts build"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.22.1"
   },
   "devDependencies": {
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.4",
     "clsx": "^1.2.1",
     "@ant-design/icons": "^4.7.0",
     "@emotion/react": "^11.10.4",
