@@ -59,7 +59,7 @@ docker run -d \
 
 | Parameter                                       | Function                        |
 | ----------------------------------------------- | ------------------------------- |
-| `-p 127.0.0.1:80:8080/tcp`                      | Http webUI                      |
+| `-p 127.0.0.1:80:8080/tcp`                      | HTTP web interface                      |
 | `-e TZ=Asia/Shanghai`                           | Specify a timezone              |
 | `-v /path/to/config:/usr/lib/timetender/config` | Timetender's configuration directory |
 | `-v /path/for/data:/usr/lib/timetender/data`    | Timetender's data storage directory       |
