@@ -77,6 +77,13 @@ jobs:
             docker.io/titanrgb/timetender:${{ needs.get-tags.outputs.version-tag }}
             docker.io/titanrgb/timetender:latest
 
+      - uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: titanrgb/timetender
+          readme-filepath: ./README.md
+
   release-assets:
     needs: get-tags
     runs-on: ubuntu-latest
@@ -104,7 +111,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm build
-          cp dist/index.html "../timetender-${TAG}-standalone.htm"
+          cp dist/index.html "../timetender-${TAG}-standalone.html"
 
       - name: Build and export Docker images
         env:
@@ -126,5 +133,5 @@ jobs:
         with:
           tag_name: ${{ needs.get-tags.outputs.version-tag }}
           files: |
-            timetender-*-standalone.htm
+            timetender-*-standalone.html
             timetender-*-docker-*.tar.gz
