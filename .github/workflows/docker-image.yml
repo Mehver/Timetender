@@ -9,7 +9,7 @@ env:
 
 jobs:
   get-tags:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       TZ: Asia/Shanghai
     outputs:
@@ -25,7 +25,7 @@ jobs:
 
   push-ghcr:
     needs: get-tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       TZ: Asia/Shanghai
       REGISTRY: ghcr.io
@@ -52,7 +52,7 @@ jobs:
 
   push-dockerhub:
     needs: get-tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
