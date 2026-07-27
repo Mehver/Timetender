@@ -1,12 +1,22 @@
-FROM node:16-alpine3.16
+# ---------- build stage ----------
+FROM node:24-alpine AS build
 WORKDIR /usr/lib/timetender
+RUN corepack enable || npm install -g pnpm@11
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm update -g npm
-RUN npm install --legacy-peer-deps \
-    && npm run build \
-    && rm -rf node_modules
-RUN npm install --omit=dev --legacy-peer-deps \
-    && npm install dos2unix -g \
-    && dos2unix /usr/lib/timetender/src/init/init.sh
+RUN pnpm build
+
+# ---------- runtime stage ----------
+FROM node:24-alpine
+WORKDIR /usr/lib/timetender
+RUN corepack enable || npm install -g pnpm@11
+ENV NODE_ENV=production \
+    TIMETENDER_DATA_DIR=/usr/lib/timetender/data
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+COPY --from=build /usr/lib/timetender/dist ./dist
+COPY server.js ./
+VOLUME /usr/lib/timetender/data
 EXPOSE 8080
-ENTRYPOINT [ "sh", "/usr/lib/timetender/src/init/init.sh" ]
+CMD ["node", "server.js"]

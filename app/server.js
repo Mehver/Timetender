@@ -1,32 +1,44 @@
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
+import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const app = express();
+const PORT = Number(process.env.PORT) || 8080;
+const DATA_DIR = process.env.TIMETENDER_DATA_DIR || path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'timetender-data.json');
 
-const PORT = 8080;
+app.use(express.json({ limit: '10mb' }));
 
-let bodyParser = require('body-parser') ;
-app.use(bodyParser.text());
-
-app.use(express.static("build"));
-
-app.all("/load/:json_file", (req, res) => {
-    let data = fs.readFileSync(
-        path.join(__dirname, "/data", req.params.json_file)
-    );
-    res.send(data);
-});
-// save data to data.json
-app.post("/save/:json_file", (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    let data = req.body;
-    fs.writeFileSync(
-        path.join(__dirname, "/data", req.params.json_file),
-        data
-    );
-    res.send(data);
+// Load the whole dataset (null when nothing has been saved yet).
+app.get('/api/data', (_req, res) => {
+  if (!fs.existsSync(DATA_FILE)) {
+    res.json(null);
+    return;
+  }
+  res.type('application/json').send(fs.readFileSync(DATA_FILE, 'utf8'));
 });
 
-app.listen(PORT, function () {
-    console.log("Express server listening on port ", PORT);
+// Save the whole dataset.
+app.post('/api/data', (req, res) => {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.writeFileSync(DATA_FILE, JSON.stringify(req.body ?? null));
+  res.json({ ok: true });
+});
+
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true });
+});
+
+// Static frontend (single-file build) with SPA fallback.
+app.use(express.static(path.join(__dirname, 'dist')));
+app.use((_req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Timetender server listening on port ${PORT}`);
+  console.log(`Data file: ${DATA_FILE}`);
 });

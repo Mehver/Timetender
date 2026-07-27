@@ -1,4 +1,4 @@
 node_modules
-npm-debug.log
-config/*.json
-data/*.json
+dist
+data
+*.local

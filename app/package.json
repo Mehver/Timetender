@@ -1,45 +1,41 @@
 {
-  "name": "Timetender",
-  "homepage": ".",
+  "name": "timetender",
   "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.17.0",
   "scripts": {
-    "start": "nodemon server.js",
-    "react": "react-scripts start",
-    "build": "react-scripts build"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -b",
+    "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.22.2"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/material": "^7.3.1",
+    "@mui/x-data-grid": "^8.10.0",
+    "@mui/x-date-pickers": "^8.10.0",
+    "@tanstack/react-virtual": "^3.13.12",
+    "dayjs": "^1.11.13",
+    "express": "^5.1.0",
+    "nanoid": "^5.1.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
-    "body-parser": "^1.20.6",
-    "clsx": "^1.2.1",
-    "@ant-design/icons": "^4.7.0",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
-    "@mui/icons-material": "^5.10.6",
-    "@mui/material": "^5.10.7",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "jsoneditor": "^9.9.2",
-    "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.1",
-    "react-virtualized": "^9.22.3",
-    "react-window": "^1.8.7",
-    "nodemon": "^2.0.20"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "happy-dom": "^20.11.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vite-plugin-singlefile": "^2.2.0",
+    "vitest": "^3.2.4"
   }
 }
