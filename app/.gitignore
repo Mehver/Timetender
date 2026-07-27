@@ -1,18 +1,13 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# JetBrains IDE
-.idea
-
 # dependencies
-app/node_modules
+/node_modules
 /.pnp
 .pnp.js
 
 # testing
-app/coverage
+/coverage
 
 # production
-app/build
+/build
 
 # misc
 .DS_Store

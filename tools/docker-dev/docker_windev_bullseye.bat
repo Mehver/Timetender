@@ -1,1 +1,1 @@
-docker run -it --rm -v %cd%\..\..\:/docker_dev -w /docker_dev node:16-bullseye bash
+docker run -it --rm -v %cd%\..\..\:/docker_dev -w /docker_dev/app node:16-bullseye bash
