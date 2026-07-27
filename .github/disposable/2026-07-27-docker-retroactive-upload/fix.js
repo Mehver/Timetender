@@ -64,6 +64,10 @@ async function run() {
                 release_id: r.id,
                 name: filename,
                 data: createReadStream(filename),
+                headers: {
+                    "content-length": fileSize,
+                    "content-type": "application/gzip",
+                },
             });
 
             console.log(`  [${label}] Done.`);
