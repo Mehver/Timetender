@@ -15,6 +15,7 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 8192,
+    assetsInlineLimit: Infinity,
   },
   test: {
     environment: 'node',

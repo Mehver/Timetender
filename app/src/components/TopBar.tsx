@@ -17,6 +17,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SyncIcon from '@mui/icons-material/Sync';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import logo from '../assets/256.png';
 
 import { useStore } from '../store/useStore';
 
@@ -54,7 +55,7 @@ export default function TopBar() {
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar variant="dense" sx={{ gap: 1 }}>
-        <Box component="img" src="/256.png" alt="Timetender" sx={{ height: 32, width: 32 }} />
+        <Box component="img" src={logo} alt="Timetender" sx={{ height: 32, width: 32 }} />
         <Typography variant="h6" component="div" sx={{ mr: 2 }}>
           Timetender
         </Typography>
