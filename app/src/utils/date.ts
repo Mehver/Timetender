@@ -1,7 +1,17 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 
-dayjs.locale('zh-cn');
+import type { ResolvedLang } from '../types';
+
+let currentLocale: string = 'zh-cn';
+
+export function setDayjsLocale(lang: ResolvedLang): void {
+  currentLocale = lang === 'zh' ? 'zh-cn' : 'en';
+  dayjs.locale(currentLocale);
+}
+
+dayjs.locale(currentLocale);
 
 export const DATE_FMT = 'YYYY-MM-DD';
 
@@ -61,10 +71,11 @@ export function taskExtent(tasks: { start: string; end: string }[]): { min: stri
   return { min, max };
 }
 
-export function sortTasks<T extends { start: string; end: string; title: string }>(tasks: T[]): T[] {
+export function sortTasks<T extends { start: string; end: string; title: string }>(tasks: T[], lang?: ResolvedLang): T[] {
+  const collationLocale = lang === 'en' ? 'en' : 'zh-CN';
   return [...tasks].sort((a, b) => {
     if (a.start !== b.start) return a.start < b.start ? -1 : 1;
     if (a.end !== b.end) return a.end < b.end ? -1 : 1;
-    return a.title.localeCompare(b.title, 'zh-CN');
+    return a.title.localeCompare(b.title, collationLocale);
   });
 }

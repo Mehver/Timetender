@@ -9,6 +9,7 @@ import {
   loadSettings,
   saveSettings,
 } from '../storage/persistence';
+import { getT } from '../i18n/static';
 
 export type ViewKind = 'gantt' | 'table';
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -95,7 +96,7 @@ export const useStore = create<AppState>()((set, get) => ({
       suppressSave = false;
     } catch (e) {
       set({ loaded: true });
-      get().showNotify(e instanceof Error ? e.message : '数据加载失败', 'error');
+      get().showNotify(e instanceof Error ? e.message : getT(get().settings.lang)('notify.loadFailed'), 'error');
     }
   },
 
@@ -194,10 +195,10 @@ export const useStore = create<AppState>()((set, get) => ({
         }
         clearLocalData();
         s.updateSettings({ storageMode: 'backend' });
-        s.showNotify('已切换到后端存储，数据不再保存在浏览器中', 'success');
+        s.showNotify(getT(get().settings.lang)('settings.switchedToBackend'), 'success');
       } catch (e) {
         s.showNotify(
-          `切换失败：${e instanceof Error ? e.message : '无法连接后端'}`,
+          getT(get().settings.lang)('settings.switchFailed', { error: e instanceof Error ? e.message : String(e) }),
           'error',
         );
         return;
@@ -206,7 +207,7 @@ export const useStore = create<AppState>()((set, get) => ({
       s.updateSettings({ storageMode: 'local' });
       // Persist immediately so a reload does not lose anything.
       await getDriver('local').save(get().data);
-      s.showNotify('已切换到浏览器本地存储', 'success');
+      s.showNotify(getT(get().settings.lang)('settings.switchedToLocal'), 'success');
     }
     scheduleSave();
   },
@@ -235,7 +236,7 @@ async function flushSave(): Promise<void> {
     useStore.setState({ saveStatus: 'error' });
     useStore
       .getState()
-      .showNotify(e instanceof Error ? e.message : '保存失败', 'error');
+      .showNotify(e instanceof Error ? e.message : getT(useStore.getState().settings.lang)('notify.saveFailed'), 'error');
   }
 }
 

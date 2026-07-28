@@ -12,6 +12,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { buildTheme } from './theme';
 import { useStore } from './store/useStore';
+import { I18nProvider, useT } from './i18n';
+import { resolveLang } from './i18n/static';
+import { setDayjsLocale } from './utils/date';
 import TopBar from './components/TopBar';
 import GanttView from './components/GanttView';
 import TaskTableView from './components/TaskTableView';
@@ -20,25 +23,34 @@ import TagManagerDialog from './components/TagManagerDialog';
 import SettingsDialog from './components/SettingsDialog';
 import ImportExportDialog from './components/ImportExportDialog';
 
-export default function App() {
+function AppInner() {
   const loaded = useStore((s) => s.loaded);
   const view = useStore((s) => s.view);
   const themeMode = useStore((s) => s.settings.themeMode);
+  const lang = useStore((s) => s.settings.lang);
+  const resolvedLang = resolveLang(lang);
   const notify = useStore((s) => s.notify);
   const dismissNotify = useStore((s) => s.dismissNotify);
   const init = useStore((s) => s.init);
+  const t = useT();
 
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
   const resolvedMode = themeMode === 'system' ? (prefersDark ? 'dark' : 'light') : themeMode;
-  const theme = useMemo(() => buildTheme(resolvedMode), [resolvedMode]);
+  const theme = useMemo(() => buildTheme(resolvedMode, resolvedLang), [resolvedMode, resolvedLang]);
+
+  useEffect(() => {
+    setDayjsLocale(resolvedLang);
+  }, [resolvedLang]);
 
   useEffect(() => {
     void init();
   }, [init]);
 
+  const adapterLocale = resolvedLang === 'zh' ? 'zh-cn' : 'en';
+
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={adapterLocale}>
         <CssBaseline />
         {!loaded ? (
           <Box
@@ -52,7 +64,7 @@ export default function App() {
             }}
           >
             <CircularProgress />
-            <Typography color="text.secondary">Timetender 加载中…</Typography>
+            <Typography color="text.secondary">{t('app.loading')}</Typography>
           </Box>
         ) : (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -80,5 +92,13 @@ export default function App() {
         </Snackbar>
       </LocalizationProvider>
     </ThemeProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <I18nProvider>
+      <AppInner />
+    </I18nProvider>
   );
 }

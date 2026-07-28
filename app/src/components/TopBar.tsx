@@ -20,26 +20,28 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import logo from '../assets/256.png';
 
 import { useStore } from '../store/useStore';
+import { useT } from '../i18n';
 
 function SaveStatusChip() {
   const saveStatus = useStore((s) => s.saveStatus);
   const storageMode = useStore((s) => s.settings.storageMode);
+  const t = useT();
   if (saveStatus === 'saving') {
-    return <Chip size="small" icon={<SyncIcon />} label="保存中…" variant="outlined" />;
+    return <Chip size="small" icon={<SyncIcon />} label={t('topBar.saving')} variant="outlined" />;
   }
   if (saveStatus === 'saved') {
     return (
       <Chip
         size="small"
         icon={<CheckCircleIcon />}
-        label={storageMode === 'local' ? '已保存到浏览器' : '已保存到服务器'}
+        label={storageMode === 'local' ? t('topBar.savedToLocal') : t('topBar.savedToServer')}
         color="success"
         variant="outlined"
       />
     );
   }
   if (saveStatus === 'error') {
-    return <Chip size="small" icon={<ErrorOutlineIcon />} label="保存失败" color="error" />;
+    return <Chip size="small" icon={<ErrorOutlineIcon />} label={t('topBar.saveFailed')} color="error" />;
   }
   return null;
 }
@@ -51,6 +53,7 @@ export default function TopBar() {
   const setTagsDialogOpen = useStore((s) => s.setTagsDialogOpen);
   const setSettingsDialogOpen = useStore((s) => s.setSettingsDialogOpen);
   const setIoDialogOpen = useStore((s) => s.setIoDialogOpen);
+  const t = useT();
 
   return (
     <AppBar position="static" color="default" elevation={1}>
@@ -64,8 +67,8 @@ export default function TopBar() {
           onChange={(_e, v) => setView(v)}
           sx={{ minHeight: 0, '& .MuiTab-root': { minHeight: 48 } }}
         >
-          <Tab value="gantt" icon={<ViewColumnIcon />} iconPosition="start" label="甘特图" />
-          <Tab value="table" icon={<TableChartIcon />} iconPosition="start" label="任务列表" />
+          <Tab value="gantt" icon={<ViewColumnIcon />} iconPosition="start" label={t('topBar.gantt')} />
+          <Tab value="table" icon={<TableChartIcon />} iconPosition="start" label={t('topBar.tasks')} />
         </Tabs>
         <Box sx={{ flex: 1 }} />
         <SaveStatusChip />
@@ -75,19 +78,19 @@ export default function TopBar() {
           onClick={() => openTaskDialog()}
           disableElevation
         >
-          新建任务
+          {t('topBar.newTask')}
         </Button>
-        <Tooltip title="标签管理">
+        <Tooltip title={t('topBar.tagManagement')}>
           <IconButton onClick={() => setTagsDialogOpen(true)}>
             <LabelIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="导入 / 导出">
+        <Tooltip title={t('topBar.importExport')}>
           <IconButton onClick={() => setIoDialogOpen(true)}>
             <ImportExportIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="设置">
+        <Tooltip title={t('topBar.settings')}>
           <IconButton onClick={() => setSettingsDialogOpen(true)}>
             <SettingsIcon />
           </IconButton>

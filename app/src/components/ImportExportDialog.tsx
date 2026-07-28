@@ -23,6 +23,7 @@ import { convertLegacy, isLegacyEventsJson, isLegacyTagsJson } from '../utils/le
 import { tasksToCsv, tasksToTsv, tsvToTasks } from '../utils/taskio';
 import { copyText } from '../utils/clipboard';
 import { downloadText } from '../utils/download';
+import { useT } from '../i18n';
 
 type ImportMode = 'append' | 'replace';
 
@@ -51,6 +52,7 @@ export default function ImportExportDialog() {
   const data = useStore((s) => s.data);
   const addImported = useStore((s) => s.addImported);
   const showNotify = useStore((s) => s.showNotify);
+  const t = useT();
 
   const [mode, setMode] = useState<ImportMode>('append');
   const [legacyEvents, setLegacyEvents] = useState<unknown | null>(null);
@@ -72,12 +74,13 @@ export default function ImportExportDialog() {
 
   const finishImport = (tasks: Task[], tags: Tag[], source: string) => {
     if (tasks.length === 0 && tags.length === 0) {
-      showNotify(`${source}中没有可导入的数据`, 'warning');
+      showNotify(t('importExport.noData', { source }), 'warning');
       return;
     }
     addImported(tasks, tags, mode);
+    const key = mode === 'replace' ? 'importExport.importedReplace' : 'importExport.importedAppend';
     showNotify(
-      `已${mode === 'replace' ? '替换导入' : '追加导入'} ${tasks.length} 个任务、${tags.length} 个标签`,
+      t(key, { tasks: tasks.length, tags: tags.length }),
       'success',
     );
     resetTransient();
@@ -93,7 +96,7 @@ export default function ImportExportDialog() {
   };
   const exportTsv = async () => {
     const ok = await copyText(tasksToTsv(data.tasks, data.tags));
-    showNotify(ok ? '任务表已复制，可直接粘贴到 Excel' : '复制失败', ok ? 'success' : 'error');
+    showNotify(ok ? t('importExport.copied') : t('importExport.copyFailed'), ok ? 'success' : 'error');
   };
 
   /* ------------------------------ import ------------------------------ */
@@ -102,19 +105,18 @@ export default function ImportExportDialog() {
     try {
       const json: unknown = JSON.parse(await readFileText(file));
       if (isV2Data(json)) {
-        finishImport(json.tasks, json.tags, '文件');
+        finishImport(json.tasks, json.tags, t('importExport.importJson'));
       } else if (isLegacyEventsJson(json)) {
-        // Old event.json — need (optionally) the matching tag.json before converting.
         setLegacyEvents(json);
-        showNotify('检测到旧版 event.json，请选择对应的 tag.json 后执行转换导入（可跳过）', 'info');
+        showNotify(t('importExport.legacyDetected'), 'info');
       } else if (isLegacyTagsJson(json)) {
         setLegacyTags(json);
-        showNotify('已读取旧版 tag.json', 'info');
+        showNotify(t('importExport.tagRead'), 'info');
       } else {
-        showNotify('无法识别的 JSON 格式', 'error');
+        showNotify(t('importExport.unrecognizedJson'), 'error');
       }
     } catch (e) {
-      showNotify(`JSON 解析失败：${e instanceof Error ? e.message : String(e)}`, 'error');
+      showNotify(t('importExport.jsonParseFailed', { error: e instanceof Error ? e.message : String(e) }), 'error');
     } finally {
       if (jsonFileRef.current) jsonFileRef.current.value = '';
     }
@@ -125,12 +127,12 @@ export default function ImportExportDialog() {
       const json: unknown = JSON.parse(await readFileText(file));
       if (isLegacyTagsJson(json)) {
         setLegacyTags(json);
-        showNotify('已读取旧版 tag.json，现在可以执行转换导入', 'info');
+        showNotify(t('importExport.tagReadReady'), 'info');
       } else {
-        showNotify('该文件不是有效的旧版 tag.json', 'error');
+        showNotify(t('importExport.notValidTag'), 'error');
       }
     } catch (e) {
-      showNotify(`JSON 解析失败：${e instanceof Error ? e.message : String(e)}`, 'error');
+      showNotify(t('importExport.jsonParseFailed', { error: e instanceof Error ? e.message : String(e) }), 'error');
     } finally {
       if (legacyTagFileRef.current) legacyTagFileRef.current.value = '';
     }
@@ -139,55 +141,54 @@ export default function ImportExportDialog() {
   const runLegacyConvert = () => {
     if (!legacyEvents) return;
     const converted = convertLegacy(legacyEvents, legacyTags);
-    finishImport(converted.tasks, converted.tags, '旧版数据');
+    finishImport(converted.tasks, converted.tags, t('importExport.legacyRead'));
   };
 
   const handlePasteImport = () => {
     const text = pasteText.trim();
     if (!text) {
-      showNotify('请先粘贴内容', 'warning');
+      showNotify(t('importExport.pasteFirst'), 'warning');
       return;
     }
-    // Try JSON first, then TSV.
     try {
       const json: unknown = JSON.parse(text);
       if (isV2Data(json)) {
-        finishImport(json.tasks, json.tags, '粘贴内容');
+        finishImport(json.tasks, json.tags, t('importExport.pastePlaceholder'));
         return;
       }
       if (isLegacyEventsJson(json)) {
         const converted = convertLegacy(json, null);
-        finishImport(converted.tasks, converted.tags, '旧版数据');
+        finishImport(converted.tasks, converted.tags, t('importExport.legacyRead'));
         return;
       }
-      showNotify('无法识别的 JSON 格式', 'error');
+      showNotify(t('importExport.unrecognizedJson'), 'error');
       return;
     } catch {
-      /* not JSON → treat as TSV */
+      /* not JSON -> treat as TSV */
     }
     const { tasks, newTags } = tsvToTasks(text, data.tags);
-    finishImport(tasks, newTags, '粘贴内容');
+    finishImport(tasks, newTags, t('importExport.pastePlaceholder'));
   };
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-      <DialogTitle>导入 / 导出</DialogTitle>
+      <DialogTitle>{t('importExport.title')}</DialogTitle>
       <DialogContent>
         <Stack spacing={3} sx={{ mt: 0.5 }}>
           {/* export */}
           <Box>
             <Typography variant="subtitle2" gutterBottom>
-              导出（两种存储模式下均可用，建议定期备份）
+              {t('importExport.exportSection')}
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
               <Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={exportJson}>
-                JSON 备份
+                {t('importExport.jsonBackup')}
               </Button>
               <Button variant="outlined" startIcon={<FileDownloadIcon />} onClick={exportCsv}>
-                CSV（Excel 可打开）
+                {t('importExport.csv')}
               </Button>
               <Button variant="outlined" startIcon={<ContentCopyIcon />} onClick={exportTsv}>
-                复制 TSV 到剪贴板
+                {t('importExport.copyTsv')}
               </Button>
             </Stack>
           </Box>
@@ -195,11 +196,11 @@ export default function ImportExportDialog() {
           {/* import */}
           <Box>
             <Typography variant="subtitle2" gutterBottom>
-              导入方式
+              {t('importExport.importMode')}
             </Typography>
             <RadioGroup row value={mode} onChange={(e) => setMode(e.target.value as ImportMode)}>
-              <FormControlLabel value="append" control={<Radio size="small" />} label="追加到现有数据" />
-              <FormControlLabel value="replace" control={<Radio size="small" />} label="替换全部数据" />
+              <FormControlLabel value="append" control={<Radio size="small" />} label={t('importExport.append')} />
+              <FormControlLabel value="replace" control={<Radio size="small" />} label={t('importExport.replace')} />
             </RadioGroup>
             <Stack spacing={1.5} sx={{ mt: 1 }}>
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
@@ -208,10 +209,10 @@ export default function ImportExportDialog() {
                   startIcon={<FileUploadIcon />}
                   onClick={() => jsonFileRef.current?.click()}
                 >
-                  导入 JSON 文件
+                  {t('importExport.importJson')}
                 </Button>
                 <Typography variant="caption" color="text.secondary">
-                  支持本应用导出的备份，以及旧版 v0.1.x 的 event.json / tag.json
+                  {t('importExport.jsonHint')}
                 </Typography>
                 <input
                   ref={jsonFileRef}
@@ -230,15 +231,15 @@ export default function ImportExportDialog() {
                   action={
                     <Stack direction="row" spacing={1}>
                       <Button size="small" onClick={() => legacyTagFileRef.current?.click()}>
-                        {legacyTags ? '已选 tag.json ✓' : '选择 tag.json（可选）'}
+                        {legacyTags ? t('importExport.tagJsonSelected') : t('importExport.selectTagJson')}
                       </Button>
                       <Button size="small" variant="contained" disableElevation onClick={runLegacyConvert}>
-                        转换并导入（{(legacyEvents as unknown[]).length} 个任务）
+                        {t('importExport.convertImport', { count: (legacyEvents as unknown[]).length })}
                       </Button>
                     </Stack>
                   }
                 >
-                  已读取旧版 event.json
+                  {t('importExport.legacyRead')}
                   <input
                     ref={legacyTagFileRef}
                     type="file"
@@ -252,13 +253,13 @@ export default function ImportExportDialog() {
                 </Alert>
               )}
               <TextField
-                label="或在此粘贴 Excel 区域 / JSON 文本"
+                label={t('importExport.pastePlaceholder')}
                 value={pasteText}
                 onChange={(e) => setPasteText(e.target.value)}
                 multiline
                 minRows={4}
                 fullWidth
-                placeholder={'从 Excel 复制的区域（制表符分隔）：\n标题\t开始\t截止\t标签\n写报告\t2026-08-01\t2026-08-05\t工作'}
+                placeholder={t('importExport.pasteArea')}
               />
               <Button
                 variant="contained"
@@ -267,14 +268,14 @@ export default function ImportExportDialog() {
                 disabled={!pasteText.trim()}
                 sx={{ alignSelf: 'flex-start' }}
               >
-                解析并导入
+                {t('importExport.parseImport')}
               </Button>
             </Stack>
           </Box>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)}>关闭</Button>
+        <Button onClick={() => setOpen(false)}>{t('importExport.close')}</Button>
       </DialogActions>
     </Dialog>
   );

@@ -19,6 +19,7 @@ import type { Task } from '../types';
 import { daysBetween } from '../utils/date';
 import { readableTextColor } from '../utils/color';
 import { tasksToTsv, tsvToTasks } from '../utils/taskio';
+import { useT } from '../i18n';
 import ConfirmDialog from './ConfirmDialog';
 
 export default function TaskTableView() {
@@ -29,6 +30,7 @@ export default function TaskTableView() {
   const upsertTask = useStore((s) => s.upsertTask);
   const addImported = useStore((s) => s.addImported);
   const showNotify = useStore((s) => s.showNotify);
+  const t = useT();
 
   const apiRef = useGridApiRef();
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
@@ -39,7 +41,7 @@ export default function TaskTableView() {
     () => [
       {
         field: 'color',
-        headerName: '颜色',
+        headerName: t('table.color'),
         width: 64,
         sortable: false,
         filterable: false,
@@ -58,19 +60,19 @@ export default function TaskTableView() {
           </Box>
         ),
       },
-      { field: 'title', headerName: '标题', flex: 1, minWidth: 160 },
-      { field: 'start', headerName: '开始', width: 110 },
-      { field: 'end', headerName: '截止', width: 110 },
+      { field: 'title', headerName: t('table.title'), flex: 1, minWidth: 160 },
+      { field: 'start', headerName: t('table.start'), width: 110 },
+      { field: 'end', headerName: t('table.end'), width: 110 },
       {
         field: 'days',
-        headerName: '天数',
+        headerName: t('table.days'),
         width: 72,
         type: 'number',
         valueGetter: (_value, row) => daysBetween(row.start, row.end) + 1,
       },
       {
         field: 'tags',
-        headerName: '标签',
+        headerName: t('table.tags'),
         width: 220,
         sortable: false,
         valueGetter: (_value, row: Task) =>
@@ -100,50 +102,45 @@ export default function TaskTableView() {
           </Stack>
         ),
       },
-      { field: 'finished', headerName: '完成', type: 'boolean', width: 76, editable: true },
-      { field: 'description', headerName: '描述', width: 220 },
+      { field: 'finished', headerName: t('table.completed'), type: 'boolean', width: 76, editable: true },
+      { field: 'description', headerName: t('table.description'), width: 220 },
       {
         field: 'actions',
         type: 'actions',
-        headerName: '操作',
+        headerName: t('table.actions'),
         width: 96,
         getActions: (params: GridRowParams<Task>) => [
           <GridActionsCellItem
             key="edit"
             icon={<EditIcon />}
-            label="编辑"
+            label={t('table.edit')}
             onClick={() => openTaskDialog(String(params.id))}
           />,
           <GridActionsCellItem
             key="delete"
             icon={<DeleteIcon />}
-            label="删除"
+            label={t('table.delete')}
             onClick={() => setDeleteTarget(params.row)}
           />,
         ],
       },
     ],
-    [tagById, openTaskDialog],
+    [tagById, openTaskDialog, t],
   );
 
-  /**
-   * Ctrl+C with selected rows → Excel-friendly TSV (with header).
-   * Runs in the capture phase so the grid's own clipboard handler never fires.
-   */
   const handleCopy = useCallback(
     (e: ReactClipboardEvent) => {
       const selected = apiRef.current?.getSelectedRows?.();
-      if (!selected || selected.size === 0) return; // default single-cell copy
+      if (!selected || selected.size === 0) return;
       e.preventDefault();
       e.stopPropagation();
       const rows = [...selected.values()] as Task[];
       e.clipboardData.setData('text/plain', tasksToTsv(rows, tags));
-      showNotify(`已复制 ${rows.length} 个任务，可直接粘贴到 Excel`, 'success');
+      showNotify(t('table.copiedN', { count: rows.length }), 'success');
     },
-    [apiRef, tags, showNotify],
+    [apiRef, tags, showNotify, t],
   );
 
-  /** Ctrl+V TSV from Excel → append tasks (auto-creating unknown tags). */
   const handlePaste = useCallback(
     (e: ReactClipboardEvent) => {
       const text = e.clipboardData.getData('text/plain');
@@ -151,16 +148,18 @@ export default function TaskTableView() {
       e.preventDefault();
       const { tasks: parsed, newTags } = tsvToTasks(text, tags);
       if (parsed.length === 0) {
-        showNotify('剪贴板中未识别到任务行（需要至少包含：标题、开始、截止三列）', 'warning');
+        showNotify(t('table.noTasksParsed'), 'warning');
         return;
       }
       addImported(parsed, newTags, 'append');
       showNotify(
-        `已粘贴导入 ${parsed.length} 个任务${newTags.length > 0 ? `，并新建 ${newTags.length} 个标签` : ''}`,
+        newTags.length > 0
+          ? t('table.importedNTags', { count: parsed.length, tagCount: newTags.length })
+          : t('table.importedN', { count: parsed.length }),
         'success',
       );
     },
-    [tags, addImported, showNotify],
+    [tags, addImported, showNotify, t],
   );
 
   return (
@@ -171,7 +170,7 @@ export default function TaskTableView() {
     >
       <Paper square elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', px: 1.5, py: 0.75 }}>
-          勾选行后 Ctrl+C 复制为 Excel 格式；从 Excel 复制区域后在此 Ctrl+V 可直接批量新增任务；双击行打开编辑表单。
+          {t('table.hint')}
         </Typography>
       </Paper>
       <Box sx={{ flex: 1, minHeight: 0 }}>
@@ -188,19 +187,19 @@ export default function TaskTableView() {
             return newRow;
           }}
           onProcessRowUpdateError={(err) =>
-            showNotify(`更新失败：${err instanceof Error ? err.message : String(err)}`, 'error')
+            showNotify(t('table.updateFailed', { error: err instanceof Error ? err.message : String(err) }), 'error')
           }
           initialState={{
             sorting: { sortModel: [{ field: 'start', sort: 'asc' }] },
           }}
-          localeText={{ noRowsLabel: '还没有任务 — 点击右上角「新建任务」，或直接从 Excel 粘贴。' }}
+          localeText={{ noRowsLabel: t('table.noRows') }}
         />
       </Box>
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="删除任务"
-        message={`确定删除任务「${deleteTarget?.title ?? ''}」吗？此操作不可撤销。`}
-        confirmLabel="删除"
+        title={t('table.deleteTask')}
+        message={t('table.deleteConfirm', { title: deleteTarget?.title ?? '' })}
+        confirmLabel={t('table.delete')}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
           if (deleteTarget) removeTask(deleteTarget.id);

@@ -37,16 +37,21 @@ export interface TimetenderData {
 
 export type StorageMode = 'local' | 'backend';
 
+export type Lang = 'zh' | 'en' | 'system';
+export type ResolvedLang = 'zh' | 'en';
+
 export interface Settings {
   storageMode: StorageMode;
   themeMode: 'light' | 'dark' | 'system';
   weekendHighlight: boolean;
+  lang: Lang;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   storageMode: 'local',
   themeMode: 'system',
   weekendHighlight: true,
+  lang: 'system',
 };
 
 export const EMPTY_DATA: TimetenderData = { version: 2, tasks: [], tags: [] };

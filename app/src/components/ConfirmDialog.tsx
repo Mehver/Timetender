@@ -4,6 +4,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useT } from '../i18n';
 
 interface Props {
   open: boolean;
@@ -19,11 +20,12 @@ export default function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = '确定',
-  cancelLabel = '取消',
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
 }: Props) {
+  const t = useT();
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
       <DialogTitle>{title}</DialogTitle>
@@ -31,9 +33,9 @@ export default function ConfirmDialog({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>{cancelLabel}</Button>
+        <Button onClick={onCancel}>{cancelLabel ?? t('confirm.cancel')}</Button>
         <Button onClick={onConfirm} color="error" variant="contained" disableElevation>
-          {confirmLabel}
+          {confirmLabel ?? t('confirm.confirm')}
         </Button>
       </DialogActions>
     </Dialog>

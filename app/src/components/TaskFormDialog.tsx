@@ -28,6 +28,7 @@ import { makeEmptyTask, useStore } from '../store/useStore';
 import type { HistoryEntry, Task } from '../types';
 import { DATE_FMT, todayStr } from '../utils/date';
 import { readableTextColor } from '../utils/color';
+import { useT } from '../i18n';
 import ColorPicker from './ColorPicker';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -42,6 +43,7 @@ export default function TaskFormDialog() {
   const removeTask = useStore((s) => s.removeTask);
   const setTagsDialogOpen = useStore((s) => s.setTagsDialogOpen);
   const showNotify = useStore((s) => s.showNotify);
+  const t = useT();
 
   const editing = taskDialog.taskId
     ? (tasks.find((t) => t.id === taskDialog.taskId) ?? null)
@@ -51,7 +53,6 @@ export default function TaskFormDialog() {
   const [titleError, setTitleError] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  // (Re)initialize the form whenever the dialog opens.
   useEffect(() => {
     if (!taskDialog.open) return;
     setTitleError(false);
@@ -83,32 +84,32 @@ export default function TaskFormDialog() {
       .filter((h) => h.status.trim() || h.time.trim())
       .sort((a, b) => (a.time < b.time ? -1 : 1));
     upsertTask({ ...form, title, end, history });
-    showNotify(editing ? '任务已更新' : '任务已创建', 'success');
+    showNotify(editing ? t('taskForm.taskUpdated') : t('taskForm.taskCreated'), 'success');
     closeTaskDialog();
   };
 
   return (
     <>
       <Dialog open={taskDialog.open} onClose={closeTaskDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{editing ? '编辑任务' : '新建任务'}</DialogTitle>
+        <DialogTitle>{editing ? t('taskForm.editTask') : t('taskForm.newTask')}</DialogTitle>
         <DialogContent>
           <Stack spacing={2.5} sx={{ mt: 0.5 }}>
             <TextField
-              label="标题"
+              label={t('taskForm.title')}
               value={form.title}
               onChange={(e) => {
                 patch({ title: e.target.value });
                 if (titleError) setTitleError(false);
               }}
               error={titleError}
-              helperText={titleError ? '标题不能为空' : undefined}
+              helperText={titleError ? t('taskForm.titleRequired') : undefined}
               required
               autoFocus
               fullWidth
             />
             <Stack direction="row" spacing={2}>
               <DatePicker
-                label="开始日期"
+                label={t('taskForm.startDate')}
                 value={dayjs(form.start)}
                 onChange={(d) => {
                   if (!d || !d.isValid()) return;
@@ -118,7 +119,7 @@ export default function TaskFormDialog() {
                 slotProps={{ textField: { size: 'small', fullWidth: true } }}
               />
               <DatePicker
-                label="截止日期"
+                label={t('taskForm.endDate')}
                 value={dayjs(form.end)}
                 minDate={dayjs(form.start)}
                 onChange={(d) => {
@@ -130,15 +131,15 @@ export default function TaskFormDialog() {
             </Stack>
             <Box>
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                颜色
+                {t('taskForm.color')}
               </Typography>
               <ColorPicker value={form.color} onChange={(color) => patch({ color })} />
             </Box>
             <FormControl fullWidth size="small">
-              <InputLabel id="task-tags-label">标签</InputLabel>
+              <InputLabel id="task-tags-label">{t('taskForm.tags')}</InputLabel>
               <Select
                 labelId="task-tags-label"
-                label="标签"
+                label={t('taskForm.tags')}
                 multiple
                 value={form.tagIds}
                 onChange={(e) => patch({ tagIds: e.target.value as string[] })}
@@ -180,7 +181,7 @@ export default function TaskFormDialog() {
                 ))}
                 {tags.length === 0 && (
                   <MenuItem disabled value="">
-                    <ListItemText primary="还没有标签" />
+                    <ListItemText primary={t('taskForm.noTags')} />
                   </MenuItem>
                 )}
               </Select>
@@ -189,11 +190,11 @@ export default function TaskFormDialog() {
                 sx={{ alignSelf: 'flex-start', mt: 0.5 }}
                 onClick={() => setTagsDialogOpen(true)}
               >
-                管理标签…
+                {t('taskForm.manageTags')}
               </Button>
             </FormControl>
             <TextField
-              label="描述"
+              label={t('taskForm.description')}
               value={form.description}
               onChange={(e) => patch({ description: e.target.value })}
               multiline
@@ -207,13 +208,13 @@ export default function TaskFormDialog() {
                   onChange={(e) => patch({ finished: e.target.checked })}
                 />
               }
-              label="已完成"
+              label={t('taskForm.finished')}
             />
             <Divider />
             <Box>
               <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
                 <Typography variant="subtitle2" sx={{ flex: 1 }}>
-                  进度记录
+                  {t('taskForm.progress')}
                 </Typography>
                 <Button
                   size="small"
@@ -225,12 +226,12 @@ export default function TaskFormDialog() {
                     }))
                   }
                 >
-                  添加记录
+                  {t('taskForm.addRecord')}
                 </Button>
               </Stack>
               {form.history.length === 0 && (
                 <Typography variant="caption" color="text.secondary">
-                  暂无记录，可用于跟踪任务进展（如「开始」「完成一半」）。
+                  {t('taskForm.noRecords')}
                 </Typography>
               )}
               <Stack spacing={1}>
@@ -248,7 +249,7 @@ export default function TaskFormDialog() {
                     />
                     <TextField
                       size="small"
-                      placeholder="状态，如：完成一半"
+                      placeholder={t('taskForm.statusPlaceholder')}
                       value={h.status}
                       onChange={(e) => patchHistory(i, { status: e.target.value })}
                       fullWidth
@@ -270,20 +271,20 @@ export default function TaskFormDialog() {
         <DialogActions sx={{ px: 3, pb: 2 }}>
           {editing && (
             <Button color="error" onClick={() => setConfirmDelete(true)} sx={{ mr: 'auto' }}>
-              删除
+              {t('taskForm.delete')}
             </Button>
           )}
-          <Button onClick={closeTaskDialog}>取消</Button>
+          <Button onClick={closeTaskDialog}>{t('taskForm.cancel')}</Button>
           <Button variant="contained" onClick={handleSave} disableElevation>
-            保存
+            {t('taskForm.save')}
           </Button>
         </DialogActions>
       </Dialog>
       <ConfirmDialog
         open={confirmDelete}
-        title="删除任务"
-        message={`确定删除任务「${form.title}」吗？此操作不可撤销。`}
-        confirmLabel="删除"
+        title={t('taskForm.deleteTask')}
+        message={t('taskForm.deleteConfirm', { title: form.title })}
+        confirmLabel={t('taskForm.delete')}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={() => {
           if (editing) removeTask(editing.id);

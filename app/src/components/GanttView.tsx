@@ -41,12 +41,13 @@ import {
 import { readableTextColor, withAlpha } from '../utils/color';
 import { toTsv } from '../utils/tsv';
 import { copyText } from '../utils/clipboard';
+import { useT, useLang } from '../i18n';
 
 const TITLE_W = 220;
 const CELL_W = 36;
 const CELL_H = 28;
 const HEADER_H = 38;
-const MAX_DAYS = 732; // cap for performance when auto-fitting
+const MAX_DAYS = 732;
 
 interface Selection {
   r1: number;
@@ -75,6 +76,7 @@ interface RowProps {
   dividerColor: string;
   weekendColor: string;
   todayColor: string;
+  unnamedLabel: string;
   onCellMouseDown: (row: number, col: number, e: ReactMouseEvent) => void;
   onCellMouseEnter: (row: number, col: number) => void;
   onTitleClick: (taskId: string) => void;
@@ -96,6 +98,7 @@ const GanttRow = memo(function GanttRow(props: RowProps) {
     dividerColor,
     weekendColor,
     todayColor,
+    unnamedLabel,
     onCellMouseDown,
     onCellMouseEnter,
     onTitleClick,
@@ -151,7 +154,7 @@ const GanttRow = memo(function GanttRow(props: RowProps) {
             textDecoration: task.finished ? 'line-through' : 'none',
           }}
         >
-          {task.title || '（未命名）'}
+          {task.title || unnamedLabel}
         </span>
         <span style={{ display: 'inline-flex', gap: 3, flex: '0 0 auto' }}>
           {task.tagIds.map((id) => {
@@ -266,11 +269,12 @@ export default function GanttView() {
   const weekendHighlight = useStore((s) => s.settings.weekendHighlight);
   const openTaskDialog = useStore((s) => s.openTaskDialog);
   const showNotify = useStore((s) => s.showNotify);
+  const t = useT();
+  const lang = useLang();
 
-  const sortedTasks = useMemo(() => sortTasks(tasks), [tasks]);
+  const sortedTasks = useMemo(() => sortTasks(tasks, lang), [tasks, lang]);
   const tagById = useMemo(() => new Map(tags.map((t) => [t.id, t])), [tags]);
 
-  // Visible date window. `null` → auto-fit the whole dataset.
   const [range, setRange] = useState<{ start: string; count: number } | null>(null);
 
   const effectiveRange = useMemo(() => {
@@ -298,11 +302,9 @@ export default function GanttView() {
     getScrollElement: () => scrollRef.current,
     estimateSize: () => CELL_H,
     overscan: 8,
-    // Sensible first-paint estimate; real measurement replaces it on mount.
     initialRect: { width: 1200, height: 800 },
   });
 
-  // End dragging on mouseup anywhere.
   useEffect(() => {
     const up = () => {
       dragAnchor.current = null;
@@ -311,7 +313,6 @@ export default function GanttView() {
     return () => window.removeEventListener('mouseup', up);
   }, []);
 
-  // Center "today" on first mount.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -344,7 +345,7 @@ export default function GanttView() {
 
   const buildTsv = useCallback(
     (sel: Selection): string => {
-      const lines: string[][] = [['任务', ...days.slice(sel.c1, sel.c2 + 1)]];
+      const lines: string[][] = [[t('gantt.header').replace(' \\ ', '、'), ...days.slice(sel.c1, sel.c2 + 1)]];
       for (let r = sel.r1; r <= sel.r2; r++) {
         const task = sortedTasks[r];
         if (!task) continue;
@@ -356,32 +357,32 @@ export default function GanttView() {
       }
       return toTsv(lines);
     },
-    [days, sortedTasks],
+    [days, sortedTasks, t],
   );
 
   const handleCopy = useCallback(
     (e: ReactClipboardEvent) => {
-      if (!selection) return; // let inputs etc. use default copy
+      if (!selection) return;
       e.preventDefault();
       e.clipboardData.setData('text/plain', buildTsv(selection));
-      showNotify('已复制选区，可直接粘贴到 Excel', 'success');
+      showNotify(t('gantt.copiedSelection'), 'success');
     },
-    [selection, buildTsv, showNotify],
+    [selection, buildTsv, showNotify, t],
   );
 
   const copyWholeView = useCallback(async () => {
     if (sortedTasks.length === 0) {
-      showNotify('没有可复制的任务', 'warning');
+      showNotify(t('gantt.noTasksToCopy'), 'warning');
       return;
     }
     const ok = await copyText(
       buildTsv({ r1: 0, c1: 0, r2: sortedTasks.length - 1, c2: days.length - 1 }),
     );
     showNotify(
-      ok ? '已复制整个甘特图，可粘贴到 Excel' : '复制失败，请手动框选后 Ctrl+C',
+      ok ? t('gantt.copiedView') : t('gantt.copyFailed'),
       ok ? 'success' : 'error',
     );
-  }, [buildTsv, days.length, sortedTasks.length, showNotify]);
+  }, [buildTsv, days.length, sortedTasks.length, showNotify, t]);
 
   const handleKeyDown = useCallback((e: ReactKeyboardEvent) => {
     if (e.key === 'Escape') setSelection(null);
@@ -389,8 +390,6 @@ export default function GanttView() {
 
   const handleCellMouseDown = useCallback((row: number, col: number, e: ReactMouseEvent) => {
     e.preventDefault();
-    // preventDefault blocks the default focus move — focus the grid explicitly
-    // so that the subsequent Ctrl+C copy event reaches its onCopy handler.
     scrollRef.current?.focus({ preventScroll: true });
     dragAnchor.current = { r: row, c: col };
     setSelection({ r1: row, c1: col, r2: row, c2: col });
@@ -406,6 +405,8 @@ export default function GanttView() {
     (taskId: string) => openTaskDialog(taskId),
     [openTaskDialog],
   );
+
+  const unnamedLabel = t('gantt.unnamed');
 
   const dividerColor = theme.palette.divider;
   const weekendColor = isDark ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.05)';
@@ -431,15 +432,15 @@ export default function GanttView() {
             flexWrap: 'wrap',
           }}
         >
-          <Tooltip title="向前翻页">
+          <Tooltip title={t('gantt.prevPage')}>
             <IconButton size="small" onClick={() => shiftWindow(-1)}>
               <ChevronLeftIcon />
             </IconButton>
           </Tooltip>
           <Button size="small" startIcon={<TodayIcon />} onClick={jumpToToday}>
-            今天
+            {t('gantt.today')}
           </Button>
-          <Tooltip title="向后翻页">
+          <Tooltip title={t('gantt.nextPage')}>
             <IconButton size="small" onClick={() => shiftWindow(1)}>
               <ChevronRightIcon />
             </IconButton>
@@ -454,22 +455,25 @@ export default function GanttView() {
             }}
             sx={{ minWidth: 110 }}
           >
-            <MenuItem value="fit">适应全部</MenuItem>
-            <MenuItem value="30">30 天</MenuItem>
-            <MenuItem value="60">60 天</MenuItem>
-            <MenuItem value="90">90 天</MenuItem>
-            <MenuItem value="180">180 天</MenuItem>
-            <MenuItem value="365">365 天</MenuItem>
+            <MenuItem value="fit">{t('gantt.fitAll')}</MenuItem>
+            <MenuItem value="30">{t('gantt.days_30')}</MenuItem>
+            <MenuItem value="60">{t('gantt.days_60')}</MenuItem>
+            <MenuItem value="90">{t('gantt.days_90')}</MenuItem>
+            <MenuItem value="180">{t('gantt.days_180')}</MenuItem>
+            <MenuItem value="365">{t('gantt.days_365')}</MenuItem>
           </Select>
-          <Tooltip title="将整个可见区域复制为表格（可粘贴到 Excel）">
+          <Tooltip title={t('gantt.copyViewTooltip')}>
             <Button size="small" startIcon={<ContentCopyIcon />} onClick={copyWholeView}>
-              复制可见区域
+              {t('gantt.copyView')}
             </Button>
           </Tooltip>
           <Box sx={{ flex: 1 }} />
           <Typography variant="caption" color="text.secondary">
-            {sortedTasks.length} 个任务 · {days[0]} ~ {days[days.length - 1]} · 框选后 Ctrl+C
-            复制到 Excel · 双击单元格编辑任务
+            {t('gantt.statusBar', {
+              count: sortedTasks.length,
+              first: days[0],
+              last: days[days.length - 1],
+            })}
           </Typography>
         </Box>
       </Paper>
@@ -523,7 +527,7 @@ export default function GanttView() {
                 fontWeight: 600,
               }}
             >
-              任务 ＼ 日期
+              {t('gantt.header')}
             </div>
             {days.map((day) => {
               const weekend = weekendHighlight && isWeekend(day);
@@ -581,6 +585,7 @@ export default function GanttView() {
                 dividerColor={dividerColor}
                 weekendColor={weekendColor}
                 todayColor={todayColor}
+                unnamedLabel={unnamedLabel}
                 onCellMouseDown={handleCellMouseDown}
                 onCellMouseEnter={handleCellMouseEnter}
                 onTitleClick={handleTitleClick}
@@ -601,8 +606,7 @@ export default function GanttView() {
               }}
             >
               <Typography color="text.secondary">
-                还没有任务 — 点击右上角「新建任务」开始，或在「导入 / 导出」中粘贴 Excel
-                数据、导入旧版 JSON。
+                {t('gantt.noTasks')}
               </Typography>
             </div>
           )}

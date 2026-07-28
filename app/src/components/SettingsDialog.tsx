@@ -14,8 +14,9 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 import { useStore } from '../store/useStore';
-import type { Settings } from '../types';
+import type { Lang, Settings } from '../types';
 import { backendDriver } from '../storage/persistence';
+import { useT } from '../i18n';
 import ConfirmDialog from './ConfirmDialog';
 
 type PendingSwitch = { direction: 'push' | 'pull' } | null;
@@ -29,6 +30,7 @@ export default function SettingsDialog() {
   const switchStorageMode = useStore((s) => s.switchStorageMode);
   const clearAllData = useStore((s) => s.clearAllData);
   const showNotify = useStore((s) => s.showNotify);
+  const t = useT();
 
   const [pendingSwitch, setPendingSwitch] = useState<PendingSwitch>(null);
   const [remoteTaskCount, setRemoteTaskCount] = useState(0);
@@ -43,19 +45,17 @@ export default function SettingsDialog() {
         await switchStorageMode('local');
         return;
       }
-      // Switching to backend: decide push vs pull.
       try {
         const remote = await backendDriver.load();
         if (remote && (remote.tasks.length > 0 || remote.tags.length > 0)) {
           setRemoteTaskCount(remote.tasks.length);
-          setPendingSwitch({ direction: 'pull' }); // ask the user below
+          setPendingSwitch({ direction: 'pull' });
           return;
         }
-        // Backend is empty → just push the current data.
         await switchStorageMode('backend', 'push');
       } catch (e) {
         showNotify(
-          `无法连接后端存储：${e instanceof Error ? e.message : String(e)}`,
+          t('settings.backendUnreachable', { error: e instanceof Error ? e.message : String(e) }),
           'error',
         );
       }
@@ -67,12 +67,29 @@ export default function SettingsDialog() {
   return (
     <>
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>设置</DialogTitle>
+        <DialogTitle>{t('settings.title')}</DialogTitle>
         <DialogContent>
           <Stack spacing={2.5} sx={{ mt: 0.5 }}>
             <div>
               <Typography variant="subtitle2" gutterBottom>
-                数据存储
+                {t('settings.language')}
+              </Typography>
+              <RadioGroup
+                row
+                value={settings.lang}
+                onChange={(e) =>
+                  updateSettings({ lang: e.target.value as Lang })
+                }
+              >
+                <FormControlLabel value="system" control={<Radio />} label={t('settings.langSystem')} />
+                <FormControlLabel value="zh" control={<Radio />} label={t('settings.langZh')} />
+                <FormControlLabel value="en" control={<Radio />} label={t('settings.langEn')} />
+              </RadioGroup>
+            </div>
+            <Divider />
+            <div>
+              <Typography variant="subtitle2" gutterBottom>
+                {t('settings.dataStorage')}
               </Typography>
               <RadioGroup
                 value={settings.storageMode}
@@ -84,9 +101,9 @@ export default function SettingsDialog() {
                   disabled={busy}
                   label={
                     <>
-                      浏览器本地存储
+                      {t('settings.localStorage')}
                       <Typography variant="caption" color="text.secondary" display="block">
-                        数据保存在此浏览器中，无需服务器；可随时导出备份。
+                        {t('settings.localStorageHint')}
                       </Typography>
                     </>
                   }
@@ -97,9 +114,9 @@ export default function SettingsDialog() {
                   disabled={busy}
                   label={
                     <>
-                      后端服务器存储
+                      {t('settings.backendStorage')}
                       <Typography variant="caption" color="text.secondary" display="block">
-                        数据保存在服务器上（需通过 Express 服务访问本应用），便于多设备同步；切换后浏览器中不再保留数据副本。
+                        {t('settings.backendStorageHint')}
                       </Typography>
                     </>
                   }
@@ -107,14 +124,14 @@ export default function SettingsDialog() {
               </RadioGroup>
               {busy && (
                 <Alert severity="info" sx={{ mt: 1 }}>
-                  正在切换存储模式…
+                  {t('settings.switching')}
                 </Alert>
               )}
             </div>
             <Divider />
             <div>
               <Typography variant="subtitle2" gutterBottom>
-                外观
+                {t('settings.appearance')}
               </Typography>
               <RadioGroup
                 row
@@ -123,9 +140,9 @@ export default function SettingsDialog() {
                   updateSettings({ themeMode: e.target.value as Settings['themeMode'] })
                 }
               >
-                <FormControlLabel value="system" control={<Radio />} label="跟随系统" />
-                <FormControlLabel value="light" control={<Radio />} label="浅色" />
-                <FormControlLabel value="dark" control={<Radio />} label="深色" />
+                <FormControlLabel value="system" control={<Radio />} label={t('settings.followSystem')} />
+                <FormControlLabel value="light" control={<Radio />} label={t('settings.light')} />
+                <FormControlLabel value="dark" control={<Radio />} label={t('settings.dark')} />
               </RadioGroup>
               <FormControlLabel
                 control={
@@ -134,31 +151,30 @@ export default function SettingsDialog() {
                     onChange={(e) => updateSettings({ weekendHighlight: e.target.checked })}
                   />
                 }
-                label="在甘特图中高亮周末"
+                label={t('settings.weekendHighlight')}
               />
             </div>
             <Divider />
             <div>
               <Typography variant="subtitle2" gutterBottom color="error">
-                危险操作
+                {t('settings.dangerOps')}
               </Typography>
               <Button color="error" variant="outlined" onClick={() => setConfirmClear(true)}>
-                清空全部任务与标签（{tasks.length} 个任务）
+                {t('settings.clearAll', { count: tasks.length })}
               </Button>
             </div>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>关闭</Button>
+          <Button onClick={() => setOpen(false)}>{t('settings.close')}</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Backend already has data — ask which copy wins. */}
       <Dialog open={pendingSwitch !== null} onClose={() => setPendingSwitch(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>后端已存在数据</DialogTitle>
+        <DialogTitle>{t('settings.backendHasData')}</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
-            服务器上已有 {remoteTaskCount} 个任务。切换到后端存储时，请选择保留哪份数据：
+            {t('settings.backendHasDataMsg', { count: remoteTaskCount })}
           </Typography>
         </DialogContent>
         <DialogActions sx={{ flexDirection: 'column', alignItems: 'stretch', gap: 1, px: 3, pb: 2 }}>
@@ -170,7 +186,7 @@ export default function SettingsDialog() {
               void switchStorageMode('backend', 'pull');
             }}
           >
-            使用后端数据（覆盖浏览器中的 {tasks.length} 个任务）
+            {t('settings.useBackend', { count: tasks.length })}
           </Button>
           <Button
             variant="outlined"
@@ -179,22 +195,22 @@ export default function SettingsDialog() {
               void switchStorageMode('backend', 'push');
             }}
           >
-            上传浏览器数据（覆盖服务器）
+            {t('settings.uploadBrowser')}
           </Button>
-          <Button onClick={() => setPendingSwitch(null)}>取消</Button>
+          <Button onClick={() => setPendingSwitch(null)}>{t('settings.cancel')}</Button>
         </DialogActions>
       </Dialog>
 
       <ConfirmDialog
         open={confirmClear}
-        title="清空全部数据"
-        message="将删除所有任务与标签（当前存储位置中的数据也会被覆盖清空）。建议先导出备份。确定继续吗？"
-        confirmLabel="全部清空"
+        title={t('settings.clearAllTitle')}
+        message={t('settings.clearAllMsg')}
+        confirmLabel={t('settings.clearAllBtn')}
         onCancel={() => setConfirmClear(false)}
         onConfirm={() => {
           clearAllData();
           setConfirmClear(false);
-          showNotify('已清空全部数据', 'success');
+          showNotify(t('settings.cleared'), 'success');
         }}
       />
     </>

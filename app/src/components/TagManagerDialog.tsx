@@ -16,6 +16,7 @@ import { nanoid } from 'nanoid';
 import { useStore } from '../store/useStore';
 import type { Tag } from '../types';
 import { pickDefaultColor } from '../utils/color';
+import { useT } from '../i18n';
 import ConfirmDialog from './ConfirmDialog';
 
 export default function TagManagerDialog() {
@@ -25,6 +26,7 @@ export default function TagManagerDialog() {
   const tasks = useStore((s) => s.data.tasks);
   const upsertTag = useStore((s) => s.upsertTag);
   const removeTag = useStore((s) => s.removeTag);
+  const t = useT();
 
   const [deleteTarget, setDeleteTarget] = useState<Tag | null>(null);
 
@@ -39,7 +41,7 @@ export default function TagManagerDialog() {
   const addTag = () => {
     upsertTag({
       id: nanoid(),
-      name: `新标签 ${tags.length + 1}`,
+      name: t('tagManager.defaultName', { n: tags.length + 1 }),
       type: '',
       color: pickDefaultColor(tags.length),
     });
@@ -48,12 +50,12 @@ export default function TagManagerDialog() {
   return (
     <>
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>标签管理</DialogTitle>
+        <DialogTitle>{t('tagManager.title')}</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} sx={{ mt: 0.5 }}>
             {tags.length === 0 && (
               <Typography variant="body2" color="text.secondary">
-                还没有标签，点击下方按钮创建。标签可用于按颜色对任务分类。
+                {t('tagManager.empty')}
               </Typography>
             )}
             {tags.map((tag) => {
@@ -81,14 +83,14 @@ export default function TagManagerDialog() {
                   />
                   <TextField
                     size="small"
-                    label="名称"
+                    label={t('tagManager.name')}
                     value={tag.name}
                     onChange={(e) => upsertTag({ ...tag, name: e.target.value })}
                     sx={{ flex: 2 }}
                   />
                   <TextField
                     size="small"
-                    label="分类"
+                    label={t('tagManager.type')}
                     value={tag.type}
                     onChange={(e) => upsertTag({ ...tag, type: e.target.value })}
                     sx={{ flex: 1.5 }}
@@ -98,7 +100,7 @@ export default function TagManagerDialog() {
                     color="text.secondary"
                     sx={{ width: 64, textAlign: 'right', flex: '0 0 auto' }}
                   >
-                    {used > 0 ? `${used} 个任务` : '未使用'}
+                    {used > 0 ? t('tagManager.usage', { count: used }) : t('tagManager.unused')}
                   </Typography>
                   <IconButton size="small" onClick={() => setDeleteTarget(tag)}>
                     <DeleteOutlineIcon fontSize="small" />
@@ -107,23 +109,23 @@ export default function TagManagerDialog() {
               );
             })}
             <Button startIcon={<AddIcon />} onClick={addTag} sx={{ alignSelf: 'flex-start' }}>
-              新建标签
+              {t('tagManager.newTag')}
             </Button>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>关闭</Button>
+          <Button onClick={() => setOpen(false)}>{t('tagManager.close')}</Button>
         </DialogActions>
       </Dialog>
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="删除标签"
+        title={t('tagManager.deleteTag')}
         message={
           deleteTarget && (usageCount.get(deleteTarget.id) ?? 0) > 0
-            ? `标签「${deleteTarget.name}」正被 ${usageCount.get(deleteTarget.id)} 个任务使用，删除后将从这些任务上移除。确定删除吗？`
-            : `确定删除标签「${deleteTarget?.name ?? ''}」吗？`
+            ? t('tagManager.deleteConfirmUsed', { name: deleteTarget.name, count: String(usageCount.get(deleteTarget.id)) })
+            : t('tagManager.deleteConfirm', { name: deleteTarget?.name ?? '' })
         }
-        confirmLabel="删除"
+        confirmLabel={t('tagManager.delete')}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
           if (deleteTarget) removeTag(deleteTarget.id);

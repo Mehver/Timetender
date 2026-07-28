@@ -5,6 +5,11 @@ import { act } from 'react';
 import App from '../../App';
 
 beforeAll(() => {
+  Object.defineProperty(navigator, 'language', {
+    value: 'zh-CN',
+    writable: true,
+    configurable: true,
+  });
   // Polyfills required by MUI / Data Grid in a headless DOM.
   if (!('matchMedia' in window)) {
     Object.defineProperty(window, 'matchMedia', {
