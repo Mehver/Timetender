@@ -89,6 +89,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
     env:
       TZ: Asia/Shanghai
     steps:
@@ -135,3 +137,16 @@ jobs:
           files: |
             timetender-*-standalone.html
             timetender-*-docker-*.tar.gz
+
+      - name: Prepare Pages artifact
+        env:
+          TAG: ${{ needs.get-tags.outputs.version-tag }}
+        run: |
+          mkdir -p public
+          cp "timetender-${TAG}-standalone.html" public/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - uses: actions/deploy-pages@v4

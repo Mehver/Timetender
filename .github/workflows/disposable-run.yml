@@ -10,6 +10,7 @@ on:
         description: Which disposable task to run
         options:
           - docker-retroactive-upload
+          - pages-retroactive-publish
       dry_run:
         type: boolean
         default: true
@@ -20,6 +21,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run:
@@ -39,3 +42,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
+
+      - run: node .github/disposable/2026-07-29-pages-retroactive-publish/fix.js
+        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' && github.event.inputs.dry_run == 'false' }}
+        with:
+          path: public
+
+      - uses: actions/deploy-pages@v4
+        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' && github.event.inputs.dry_run == 'false' }}
