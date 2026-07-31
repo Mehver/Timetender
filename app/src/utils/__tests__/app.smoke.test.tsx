@@ -82,7 +82,8 @@ describe('App smoke test', () => {
     expect(text).toContain('甘特图');
     expect(text).toContain('任务列表');
     expect(text).toContain('新建任务');
-    expect(text).toContain('还没有任务');
+    expect(text).toContain('撰写项目需求文档');
+    expect(text).toContain('5 个任务');
   }, 15000);
 
   it('renders seeded tasks with bars and tag dots', async () => {

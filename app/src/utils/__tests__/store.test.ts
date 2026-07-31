@@ -14,7 +14,6 @@ describe('store autosave (local mode)', () => {
   it('persists the first edit after a fresh (empty) init', async () => {
     await useStore.getState().init();
     expect(useStore.getState().loaded).toBe(true);
-    expect(useStore.getState().data.tasks).toHaveLength(0);
 
     useStore.getState().upsertTask({ ...makeEmptyTask('2026-07-27', 0), title: '首次编辑' });
     await vi.advanceTimersByTimeAsync(1000);

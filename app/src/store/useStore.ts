@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { Settings, Tag, Task, TimetenderData } from '../types';
 import { EMPTY_DATA } from '../types';
+import { generateSeedData } from '../data/seed';
 import { pickDefaultColor } from '../utils/color';
 import {
   clearLocalData,
@@ -92,7 +93,7 @@ export const useStore = create<AppState>()((set, get) => ({
       const data = await getDriver(settings.storageMode).load();
       // Suppress the autosave triggered by the load itself.
       suppressSave = true;
-      set({ data: data ?? EMPTY_DATA, loaded: true });
+      set({ data: data ?? generateSeedData(), loaded: true });
       suppressSave = false;
     } catch (e) {
       set({ loaded: true });
