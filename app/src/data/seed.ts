@@ -9,10 +9,6 @@ function offsetDate(base: Date, days: number): string {
   return `${y}-${m}-${day}`;
 }
 
-function todayStr(): string {
-  return offsetDate(new Date(), 0);
-}
-
 const SEED_TAGS: Tag[] = [
   { id: 'seed-tag-work',     name: '工作', type: '项目', color: '#42a5f5' },
   { id: 'seed-tag-personal', name: '个人', type: '生活', color: '#66bb6a' },
@@ -21,8 +17,6 @@ const SEED_TAGS: Tag[] = [
 ];
 
 export function generateSeedData(): TimetenderData {
-  const t = todayStr();
-
   const tasks: Task[] = [
     {
       id: 'seed-task-1',
