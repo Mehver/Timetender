@@ -48,32 +48,14 @@ jobs:
           done
           echo "value=$previous_tag" >> "$GITHUB_OUTPUT"
 
-      - name: Update version numbers
+      - name: Update version numbers and save patch
         if: ${{ steps.prev_tag.outputs.value != '' }}
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           PREVIOUS_TAG: ${{ steps.prev_tag.outputs.value }}
         run: |
           python3 .github/scripts/UpdateVersionNumber.py "$PREVIOUS_TAG" "$RELEASE_TAG"
-
-      - name: Commit version number update
-        if: ${{ steps.prev_tag.outputs.value != '' }}
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          patch_file="$RUNNER_TEMP/version-update.patch"
-          git diff --binary -- README.md docs/README-cn.md > "$patch_file"
-          git restore --source=HEAD -- README.md docs/README-cn.md
-          git fetch origin "$DEFAULT_BRANCH"
-          git checkout -B version-update-temp "origin/$DEFAULT_BRANCH"
-          git apply --index --3way "$patch_file"
-          git commit -m "Update version number to ${RELEASE_TAG}"
-          git push origin HEAD:"$DEFAULT_BRANCH"
-          git checkout "$GITHUB_SHA"
-          python3 .github/scripts/UpdateVersionNumber.py "$PREVIOUS_TAG" "$RELEASE_TAG"
+          git diff --binary -- README.md docs/README-cn.md > "$RUNNER_TEMP/version-update.patch"
 
       - name: Build standalone HTML
         working-directory: ./app
@@ -148,3 +130,18 @@ jobs:
           path: public
 
       - uses: actions/deploy-pages@v4
+
+      - name: Commit version number update
+        if: ${{ steps.prev_tag.outputs.value != '' }}
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git stash
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout -B version-update-temp "origin/$DEFAULT_BRANCH"
+          git apply --index --3way "$RUNNER_TEMP/version-update.patch"
+          git commit -m "Update version number to ${RELEASE_TAG}"
+          git push origin HEAD:"$DEFAULT_BRANCH"
