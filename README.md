@@ -34,6 +34,7 @@ It follows these rules:
         <td><img src="https://github.com/Mehver/Timetender/raw/main/docs/D.png"/></td>
     </tr>
 </table>
+
 ## 2 Usage
 
 **Build Docker Image:**
