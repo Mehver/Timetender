@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      deployments: write
       packages: write
       pages: write
       id-token: write
@@ -81,6 +82,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and publish Docker images
+        id: publish_images
         uses: docker/build-push-action@v7
         with:
           context: ./app
@@ -92,6 +94,54 @@ jobs:
             ghcr.io/mehver/timetender:latest
             docker.io/titanrgb/timetender:${{ env.TAG }}
             docker.io/titanrgb/timetender:latest
+
+      - name: Record container image publications
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_DIGEST: ${{ steps.publish_images.outputs.digest }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          record_publication() {
+            environment="$1"
+            description="$2"
+            environment_url="$3"
+            payload="$4"
+            deployment_id="$(
+              jq -cn \
+                --arg ref "$RELEASE_TAG" \
+                --arg environment "$environment" \
+                --arg description "$description" \
+                --argjson payload "$payload" \
+                '{
+                  ref: $ref,
+                  environment: $environment,
+                  description: $description,
+                  auto_merge: false,
+                  required_contexts: [],
+                  production_environment: false,
+                  transient_environment: false,
+                  payload: $payload
+                }' |
+                gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq '.id'
+            )"
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" \
+              --raw-field state=success \
+              --raw-field description="$description" \
+              --raw-field environment_url="$environment_url" \
+              --raw-field log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          }
+
+          record_publication \
+            "publish/docker-hub" \
+            "Published Docker Hub image" \
+            "https://hub.docker.com/r/titanrgb/timetender/tags?name=${RELEASE_TAG}" \
+            "$(jq -cn --arg image "docker.io/titanrgb/timetender:${RELEASE_TAG}" --arg digest "$IMAGE_DIGEST" '{image: $image, digest: $digest}')"
+          record_publication \
+            "publish/ghcr" \
+            "Published GHCR image" \
+            "https://github.com/${GITHUB_REPOSITORY}/pkgs/container/timetender" \
+            "$(jq -cn --arg image "ghcr.io/mehver/timetender:${RELEASE_TAG}" --arg digest "$IMAGE_DIGEST" '{image: $image, digest: $digest}')"
 
       - name: Export Docker images for the release
         run: |
@@ -131,7 +181,40 @@ jobs:
         with:
           path: public
 
-      - uses: actions/deploy-pages@v4
+      - name: Deploy GitHub Pages
+        id: deploy_pages
+        uses: actions/deploy-pages@v4
+
+      - name: Record GitHub Pages publication
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAGES_URL: ${{ steps.deploy_pages.outputs.page_url }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          deployment_id="$(
+            jq -cn \
+              --arg ref "$RELEASE_TAG" \
+              --arg environment "publish/github-pages" \
+              --arg description "Published GitHub Pages" \
+              --arg url "$PAGES_URL" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                description: $description,
+                auto_merge: false,
+                required_contexts: [],
+                production_environment: false,
+                transient_environment: false,
+                payload: {url: $url}
+              }' |
+              gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq '.id'
+          )"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" \
+            --raw-field state=success \
+            --raw-field description="Published GitHub Pages" \
+            --raw-field environment_url="$PAGES_URL" \
+            --raw-field log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
       - name: Commit version number update
         if: ${{ steps.prev_tag.outputs.value != '' }}
