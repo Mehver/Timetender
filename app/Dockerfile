@@ -1,5 +1,5 @@
 # ---------- build stage ----------
-FROM node:24-alpine AS build
+FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /usr/lib/timetender
 RUN corepack enable || npm install -g pnpm@11
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
