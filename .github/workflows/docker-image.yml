@@ -133,12 +133,12 @@ jobs:
           }
 
           record_publication \
-            "publish/docker-hub" \
+            "docker-hub" \
             "Published Docker Hub image" \
             "https://hub.docker.com/r/titanrgb/timetender/tags?name=${RELEASE_TAG}" \
             "$(jq -cn --arg image "docker.io/titanrgb/timetender:${RELEASE_TAG}" --arg digest "$IMAGE_DIGEST" '{image: $image, digest: $digest}')"
           record_publication \
-            "publish/ghcr" \
+            "ghcr" \
             "Published GHCR image" \
             "https://github.com/${GITHUB_REPOSITORY}/pkgs/container/timetender" \
             "$(jq -cn --arg image "ghcr.io/mehver/timetender:${RELEASE_TAG}" --arg digest "$IMAGE_DIGEST" '{image: $image, digest: $digest}')"
@@ -195,7 +195,7 @@ jobs:
           deployment_id="$(
             jq -cn \
               --arg ref "$RELEASE_TAG" \
-              --arg environment "publish/github-pages" \
+              --arg environment "github-pages" \
               --arg description "Published GitHub Pages" \
               --arg url "$PAGES_URL" \
               '{

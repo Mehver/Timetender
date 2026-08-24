@@ -12,6 +12,7 @@ on:
           - docker-retroactive-upload
           - pages-retroactive-publish
           - promote-h3-headings
+          - rename-deployment-environments
       dry_run:
         type: boolean
         default: true
@@ -22,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  deployments: write
   pages: write
   id-token: write
 
@@ -52,6 +54,12 @@ jobs:
 
       - run: node .github/disposable/2026-08-24-release-notes-promote-h3-headings/fix.js
         if: ${{ github.event.inputs.target == 'promote-h3-headings' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+
+      - run: node .github/disposable/2026-08-24-deployment-environment-rename/fix.js
+        if: ${{ github.event.inputs.target == 'rename-deployment-environments' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
