@@ -9,11 +9,7 @@ on:
         type: choice
         description: Which disposable task to run
         options:
-          - docker-retroactive-upload
-          - pages-retroactive-publish
-          - promote-h3-headings
-          - rename-deployment-environments
-          - rename-docker-hub-deployment-environment
+          - 2026-09-01-example
       dry_run:
         type: boolean
         default: true
@@ -41,40 +37,8 @@ jobs:
 
       - run: npm install @octokit/rest
 
-      - run: node .github/disposable/2026-07-27-docker-retroactive-upload/fix.js
-        if: ${{ github.event.inputs.target == 'docker-retroactive-upload' }}
+      - run: node .github/disposable/2026-09-01-example/example.js
+        if: ${{ github.event.inputs.target == '2026-09-01-example' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
-
-      - run: node .github/disposable/2026-07-29-pages-retroactive-publish/fix.js
-        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run }}
-
-      - run: node .github/disposable/2026-08-24-release-notes-promote-h3-headings/fix.js
-        if: ${{ github.event.inputs.target == 'promote-h3-headings' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run }}
-
-      - run: node .github/disposable/2026-08-24-deployment-environment-rename/fix.js
-        if: ${{ github.event.inputs.target == 'rename-deployment-environments' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run }}
-
-      - run: node .github/disposable/2026-08-31-docker-hub-deployment-rename/fix.js
-        if: ${{ github.event.inputs.target == 'rename-docker-hub-deployment-environment' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run }}
-
-      - uses: actions/upload-pages-artifact@v3
-        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' && github.event.inputs.dry_run == 'false' }}
-        with:
-          path: public
-
-      - uses: actions/deploy-pages@v4
-        if: ${{ github.event.inputs.target == 'pages-retroactive-publish' && github.event.inputs.dry_run == 'false' }}
