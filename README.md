@@ -4,7 +4,6 @@
 	<p>English | <a href='https://github.com/Mehver/Timetender/blob/main/docs/README-cn.md'>简体中文</a></p>
 	<a href='https://github.com/Mehver/Timetender'><img src="https://img.shields.io/badge/-GitHub-3A3A3A?style=flat&amp;logo=GitHub&amp;logoColor=white" referrerpolicy="no-referrer" alt="GitHub"></a>
 	<a href='https://hub.docker.com/r/titanrgb/timetender'><img src="https://img.shields.io/badge/-DockerHub-1c90ed?style=flat&amp;logo=Docker&amp;logoColor=white" alt="DockerHub"></a>
-	<a href='https://quay.io/repository/titanrgb/timetender'><img src="https://img.shields.io/badge/-Quay.io-ee0000?style=flat&amp;logo=RedHat&amp;logoColor=white" alt="Quay.io"></a>
 </div>
 
 
