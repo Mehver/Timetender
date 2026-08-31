@@ -133,7 +133,7 @@ jobs:
           }
 
           record_publication \
-            "docker-hub" \
+            "dockerhub" \
             "Published Docker Hub image" \
             "https://hub.docker.com/r/titanrgb/timetender/tags?name=${RELEASE_TAG}" \
             "$(jq -cn --arg image "docker.io/titanrgb/timetender:${RELEASE_TAG}" --arg digest "$IMAGE_DIGEST" '{image: $image, digest: $digest}')"

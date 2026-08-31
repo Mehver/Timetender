@@ -13,6 +13,7 @@ on:
           - pages-retroactive-publish
           - promote-h3-headings
           - rename-deployment-environments
+          - rename-docker-hub-deployment-environment
       dry_run:
         type: boolean
         default: true
@@ -60,6 +61,12 @@ jobs:
 
       - run: node .github/disposable/2026-08-24-deployment-environment-rename/fix.js
         if: ${{ github.event.inputs.target == 'rename-deployment-environments' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+
+      - run: node .github/disposable/2026-08-31-docker-hub-deployment-rename/fix.js
+        if: ${{ github.event.inputs.target == 'rename-docker-hub-deployment-environment' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
