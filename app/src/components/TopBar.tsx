@@ -58,7 +58,7 @@ export default function TopBar() {
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar variant="dense" sx={{ gap: 1 }}>
-        <Box component="img" src={logo} alt="Timetender" sx={{ height: 32, width: 32 }} />
+        <Box component="img" src={logo} alt="Timetender" sx={{ height: 32, width: 32, borderRadius: 1 }} />
         <Typography variant="h6" component="div" sx={{ mr: 2 }}>
           Timetender
         </Typography>
