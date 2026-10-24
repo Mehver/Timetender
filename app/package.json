@@ -31,7 +31,7 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
-    "happy-dom": "^20.11.1",
+    "happy-dom": "^21.0.4",
     "typescript": "^5.9.2",
     "vite": "^7.3.7",
     "vite-plugin-singlefile": "^2.2.0",
